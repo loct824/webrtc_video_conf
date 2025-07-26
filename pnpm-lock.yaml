@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      debug:
+        specifier: ^4.4.1
+        version: 4.4.1
       express:
         specifier: ^4.18.3
         version: 4.21.2
@@ -23,7 +26,7 @@ importers:
     devDependencies:
       chromedriver:
         specifier: ^122.0.4
-        version: 122.0.6
+        version: 122.0.6(debug@4.4.1)
       eslint:
         specifier: ^8.4.0
         version: 8.57.1
@@ -35,7 +38,7 @@ importers:
         version: 0.0.7
       nightwatch:
         specifier: ^2.0
-        version: 2.6.25(chromedriver@122.0.6)(geckodriver@3.2.0)
+        version: 2.6.25(chromedriver@122.0.6(debug@4.4.1))(geckodriver@3.2.0)
       stylelint:
         specifier: ^16.2.1
         version: 16.22.0
@@ -2967,9 +2970,9 @@ snapshots:
 
   axe-core@4.10.3: {}
 
-  axios@1.11.0:
+  axios@1.11.0(debug@4.4.1):
     dependencies:
-      follow-redirects: 1.15.9
+      follow-redirects: 1.15.9(debug@4.4.1)
       form-data: 4.0.4
       proxy-from-env: 1.1.0
     transitivePeerDependencies:
@@ -3158,10 +3161,10 @@ snapshots:
 
   chownr@2.0.0: {}
 
-  chromedriver@122.0.6:
+  chromedriver@122.0.6(debug@4.4.1):
     dependencies:
       '@testim/chrome-version': 1.1.4
-      axios: 1.11.0
+      axios: 1.11.0(debug@4.4.1)
       compare-versions: 6.1.1
       extract-zip: 2.0.1
       proxy-agent: 6.5.0
@@ -3781,7 +3784,9 @@ snapshots:
 
   flatted@3.3.3: {}
 
-  follow-redirects@1.15.9: {}
+  follow-redirects@1.15.9(debug@4.4.1):
+    optionalDependencies:
+      debug: 4.4.1
 
   for-in@1.0.2: {}
 
@@ -4627,7 +4632,7 @@ snapshots:
     dependencies:
       axe-core: 4.10.3
 
-  nightwatch@2.6.25(chromedriver@122.0.6)(geckodriver@3.2.0):
+  nightwatch@2.6.25(chromedriver@122.0.6(debug@4.4.1))(geckodriver@3.2.0):
     dependencies:
       '@nightwatch/chai': 5.0.2
       '@nightwatch/html-reporter-template': 0.2.1
@@ -4662,7 +4667,7 @@ snapshots:
       untildify: 4.0.0
       uuid: 8.3.2
     optionalDependencies:
-      chromedriver: 122.0.6
+      chromedriver: 122.0.6(debug@4.4.1)
       geckodriver: 3.2.0
     transitivePeerDependencies:
       - bufferutil

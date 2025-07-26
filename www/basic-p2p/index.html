@@ -16,7 +16,26 @@
 </head>
 <body>
 <main id="interface">
-
+  <header id="header" role="banner">
+    <h1>Welcome</h1>
+    <button class="join" id="call-button" type="button">Join Call</button>
+  </header>
+  <article id="videos">
+    <h2 class="preserve-access">Streaming Videos</h2>
+    <video id="self" 
+    autoplay
+    muted
+    playsinline
+    poster="img/placeholder.png"
+    >
+    </video>
+    <video id="peer"
+      autoplay
+      playsinline
+      poster="img/placeholder.png"
+    >
+    </video>
+  </article>
 </main>
 
 <script src="js/main.js"></script>

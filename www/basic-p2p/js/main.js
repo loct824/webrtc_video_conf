@@ -39,11 +39,14 @@ document.querySelector('#call-button').addEventListener('click', callButtonOnCli
  *  Global Variables: $self and $peer
  */
 
+// $self is for configuration of self video & audio set-up
 
 
 /**
  *  Signaling-Channel Setup
  */
+
+const sc = io.connect('/'+ namespace, { autoConnect: false})
 
 
 
@@ -109,6 +112,30 @@ document.querySelector('#call-button').addEventListener('click', callButtonOnCli
  *  Signaling-Channel Functions and Callbacks
  */
 
+function registerScCallbacks(){
+  sc.on('connect', handleScConnect)
+  sc.on('connected peer', handleScConnectedPeer)
+  sc.on('disconnected peer', handleScDisconnectedPeer)
+  sc.on('signal', handleScSignal)
+} 
+
+const handleScConnect = ()=>{
+  console.log("connected to signaling channel.  ")
+}
+
+const handleScConnectedPeer = ()=>{
+  console.log("connected with peer.")
+}
+
+const handleScDisconnectedPeer = ()=>{
+  console.log("disconnected from peer.  ")
+}
+
+const handleScSignal = ()=>{
+  console.log("socket signal")
+}
+
+registerScCallbacks()
 
 
 /**

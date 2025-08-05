@@ -40,6 +40,10 @@ document.querySelector('#call-button').addEventListener('click', callButtonOnCli
  */
 
 // $self is for configuration of self video & audio set-up
+const $self = {
+  mediaConstraints: {audio: false, video: true}
+}
+
 
 
 /**
@@ -68,6 +72,8 @@ const sc = io.connect('/'+ namespace, { autoConnect: false})
  *  User-Media Setup
  */
 
+requestSelfMedia($self.mediaConstraints)
+
 
 
 /**
@@ -79,6 +85,16 @@ const sc = io.connect('/'+ namespace, { autoConnect: false})
 /**
  *  User-Media Functions
  */
+
+async function requestSelfMedia(mediaConstraints){
+  $self.stream = new MediaStream() // a stream is a container of tracks
+  $self.media = await navigator.mediaDevices.getUserMedia(mediaConstraints) // getUserMedia() returns a stream which contains tracks from the devices
+
+  $self.stream.addTrack($self.media.getTracks()[0]) // add the first track , which is the video , to the stream container
+
+  //lastly points the self video element's source to the set up stream
+  document.querySelector('#self').srcObject = $self.stream
+}
 
 
 

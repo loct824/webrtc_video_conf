@@ -105,6 +105,14 @@ async function requestSelfMedia(mediaConstraints){
   document.querySelector('#self').srcObject = $self.stream
 }
 
+function addStreamingMedia(stream, peer){
+  if (stream){
+    for (let track of stream.getTracks()){
+      peer.connect.addTrack(track, stream)
+    }
+  }
+}
+
 
 
 /**

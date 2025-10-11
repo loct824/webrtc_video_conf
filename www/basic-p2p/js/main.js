@@ -150,6 +150,7 @@ const handleScConnect = ()=>{
 
 const handleScConnectedPeer = ()=>{
   console.log("connected with peer.")
+  $self.isPolite = true // set self to be polite when peer is connected
 }
 
 const handleScDisconnectedPeer = ()=>{

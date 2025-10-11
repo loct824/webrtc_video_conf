@@ -117,6 +117,16 @@ async function requestSelfMedia(mediaConstraints){
  *  WebRTC Functions and Callbacks
  */
 
+function registerRtcCallbacks(peer){
+  peer.connection.onnegotiationneeded = handleRtcConnectionNegotiation
+  peer.connection.onicecandidate = handleRtcIceCandidate
+  peer.connection.ontrack = handleRtcPeerTrack
+}
+
+function handleRtcPeerTrack(){
+  // TODO: Handle peer media tracks
+}
+
 
 
 /**
@@ -131,7 +141,18 @@ async function requestSelfMedia(mediaConstraints){
  *  Reusable WebRTC Functions and Callbacks
  */
 
+async function handleRtcConnectionNegotiation(){
+  $self.isMakingOffer = true;
+  console.log('Attempting to make an offer...')
+  await $peer.connection.setLocalDescription()
+  sc.emit('signal', {description: $peer.connection.localDescription})
+  $self.isMakingOffer = false
+}
 
+function handleRtcIceCandidate({ candidate}){
+  console.log('Attempting to handle an ICE candidate')
+  sc.emit('signal', {candidate: candidate} )
+}
 
 /**
  *  Signaling-Channel Functions and Callbacks

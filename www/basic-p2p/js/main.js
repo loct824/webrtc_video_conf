@@ -129,6 +129,7 @@ function addStreamingMedia(stream, peer){
 function establishCallFeatures(peer){
   // must register call backs before adding any media tracks to the peer's connection,
   // otherwise, the negotiationneeded event will be fired without executing a callback
+  console.log('establish call features.')
   registerRtcCallbacks(peer)
   addStreamingMedia($self.stream, peer)
 }
@@ -266,9 +267,10 @@ function prepareNamespace(hash, set_location){
  * Main flow
  */
 
-registerScCallbacks()
+
 const namespace = prepareNamespace(window.location.hash,true)
 /** signalling channel set up */
 const sc = io.connect('/'+ namespace, { autoConnect: false})
+registerScCallbacks()
 document.querySelector('#header h1').innerHTML=`Welcome to room #${namespace}`
 document.querySelector('#call-button').addEventListener('click', callButtonOnClick)

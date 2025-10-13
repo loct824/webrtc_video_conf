@@ -28,12 +28,8 @@ const joinCall = ()=>{
 
 const leaveCall = ()=>{
   sc.close()
+  resetPeer($peer)
 }
-
-const namespace = prepareNamespace(window.location.hash,true)
-
-document.querySelector('#header h1').innerHTML=`Welcome to room #${namespace}`
-document.querySelector('#call-button').addEventListener('click', callButtonOnClick)
 
 /**
  *  Global Variables: $self and $peer
@@ -108,7 +104,7 @@ async function requestSelfMedia(mediaConstraints){
 function addStreamingMedia(stream, peer){
   if (stream){
     for (let track of stream.getTracks()){
-      peer.connect.addTrack(track, stream)
+      peer.connection.addTrack(track, stream)
     }
   }
 }
@@ -118,6 +114,19 @@ function addStreamingMedia(stream, peer){
 /**
  *  Call Features & Reset Functions
  */
+
+function establishCallFeatures(peer){
+  // must register call backs before adding any media tracks to the peer's connection,
+  // otherwise, the negotiationneeded event will be fired without executing a callback
+  registerRtcCallbacks(peer)
+  addStreamingMedia($self.stream, peer)
+}
+
+function resetPeer(peer){
+  document.querySelector('#peer').srcObject = null
+  peer.connection.close()
+  peer.connection = new RTCPeerConnection($self.rtcConfig)
+}
 
 
 
@@ -131,8 +140,9 @@ function registerRtcCallbacks(peer){
   peer.connection.ontrack = handleRtcPeerTrack
 }
 
-function handleRtcPeerTrack(){
-  // TODO: Handle peer media tracks
+function handleRtcPeerTrack({track, streams: [stream]}){
+  console.log('Attempt to display media from peer...')
+  document.querySelector('#peer').srcObject = stream
 }
 
 
@@ -175,6 +185,7 @@ function registerScCallbacks(){
 
 const handleScConnect = ()=>{
   console.log("connected to signaling channel.  ")
+  establishCallFeatures($peer)
 }
 
 const handleScConnectedPeer = ()=>{
@@ -184,10 +195,43 @@ const handleScConnectedPeer = ()=>{
 
 const handleScDisconnectedPeer = ()=>{
   console.log("disconnected from peer.  ")
+  resetPeer($peer)
+  establishCallFeatures($peer)
 }
 
-const handleScSignal = ()=>{
+async function handleScSignal({description, candidate}){
   console.log("socket signal")
+  if (description) {
+    // work with an incoming description (offer/answer)
+    const ready_for_offer = !$self.isMakingOffer &&
+                            ($peer.connection.signalingState === 'stable' || $self.isSettingRemoteAnswerPending)
+
+    const offer_collision = description.type === 'offer' && !ready_for_offer;
+
+    $self.isIgnoringOffer = !$self.isPolite && offer_collision
+
+    if ($self.isIgnoringOffer){
+      return
+    }
+
+    $self.isSettingRemoteAnswerPending = description.type === 'answer'
+    await $peer.connection.setRemoteDescription(description)
+    $self.isSettingRemoteAnswerPending = false;
+
+    if (description.type ==='offer'){
+      await $peer.connection.setLocalDescription();
+      sc.emit('signal', { description: $peer.connection.localDescription});
+    }
+  } else if (candidate) {
+    // work with an incoming ICE candidate, ICE stands for Interactive Connectivity Establishment
+    try {
+      await $peer.connection.addIceCandidate(candidate)
+    } catch (e){
+      if (!$self.isIgnoringOffer && candidate.candidate.length > 1){
+        console.error('Unable to add ICE candidate for peer:', e)
+      }
+    }
+  }
 }
 
 registerScCallbacks()
@@ -208,3 +252,12 @@ function prepareNamespace(hash, set_location){
   if (set_location) window.location.hash = ns;
   return ns;
 }
+
+/**
+ * Main flow
+ */
+
+const namespace = prepareNamespace(window.location.hash,true)
+
+document.querySelector('#header h1').innerHTML=`Welcome to room #${namespace}`
+document.querySelector('#call-button').addEventListener('click', callButtonOnClick)

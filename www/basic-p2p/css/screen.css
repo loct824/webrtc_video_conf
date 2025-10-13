@@ -78,6 +78,10 @@ video {
    margin-bottom: 11px;
 }
 
+.connected #self{
+   cursor: pointer;
+}
+
 /* Media Queries */
 
 @media screen and (min-width: 500px) {

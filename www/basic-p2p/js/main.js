@@ -86,7 +86,12 @@ const $peer = {
 requestSelfMedia($self.mediaConstraints)
 $self.filters = new VideoFX()
 document.querySelector('#self').addEventListener('click', (e)=>{
+  if ($peer.connection.connectionState !== 'connected') return;
   const filter = `filter-${$self.filters.cycleFilter()}`
+  const fdc = $peer.connection.createDataChannel(filter);
+  fdc.onclose = ()=>{
+    console.log(`Remote peer has closed the ${filter} data channel`)
+  }
   e.target.className = filter;
 })
 
@@ -148,6 +153,7 @@ function resetPeer(peer){
 
 function registerRtcCallbacks(peer){
   peer.connection.onconnectionstatechange = handleRtcConnectionStateChange
+  peer.connection.ondatachannel = handleRtcDataChannel;
   peer.connection.onnegotiationneeded = handleRtcConnectionNegotiation
   peer.connection.onicecandidate = handleRtcIceCandidate
   peer.connection.ontrack = handleRtcPeerTrack
@@ -157,6 +163,19 @@ function handleRtcConnectionStateChange(){
   const connection_state = $peer.connection.connectionState
   console.log(`The current peer connection state is ${connection_state}`)
   document.querySelector('body').className = connection_state
+}
+
+function handleRtcDataChannel( {channel}){
+  const label = channel.label
+  console.log(`Data channel added for ${label}`)
+  if (label.startsWith('filter-')){
+    document.querySelector('#peer').className = label
+    channel.onopen = ()=>{
+      channel.close()
+    }
+  } else {
+    console.log(`opened ${channel.label} channel with an ID of ${channel.id}`)
+  }
 }
 
 function handleRtcPeerTrack({track, streams: [stream]}){

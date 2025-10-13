@@ -51,12 +51,6 @@ const $peer = {
 
 
 
-/**
- *  Signaling-Channel Setup
- */
-
-const sc = io.connect('/'+ namespace, { autoConnect: false})
-
 
 
 /**
@@ -258,6 +252,7 @@ function prepareNamespace(hash, set_location){
  */
 
 const namespace = prepareNamespace(window.location.hash,true)
-
+/** signalling channel set up */
+const sc = io.connect('/'+ namespace, { autoConnect: false})
 document.querySelector('#header h1').innerHTML=`Welcome to room #${namespace}`
 document.querySelector('#call-button').addEventListener('click', callButtonOnClick)

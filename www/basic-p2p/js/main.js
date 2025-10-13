@@ -147,9 +147,16 @@ function resetPeer(peer){
  */
 
 function registerRtcCallbacks(peer){
+  peer.connection.onconnectionstatechange = handleRtcConnectionStateChange
   peer.connection.onnegotiationneeded = handleRtcConnectionNegotiation
   peer.connection.onicecandidate = handleRtcIceCandidate
   peer.connection.ontrack = handleRtcPeerTrack
+}
+
+function handleRtcConnectionStateChange(){
+  const connection_state = $peer.connection.connectionState
+  console.log(`The current peer connection state is ${connection_state}`)
+  document.querySelector('body').className = connection_state
 }
 
 function handleRtcPeerTrack({track, streams: [stream]}){

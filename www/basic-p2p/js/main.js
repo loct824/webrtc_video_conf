@@ -8,6 +8,18 @@
 ***/
 'use strict';
 
+class VideoFX {
+  constructor(){
+    this.filters = ['grayscale', 'sepia', 'noir', 'psychedelic', 'none']
+  }
+
+  cycleFilter(){
+    const filter = this.filters.shift()
+    this.filters.push(filter)
+    return filter 
+  }
+}
+
 const callButtonOnClick = (event)=>{
   const button = event.target
   if (button.className === 'join'){
@@ -72,6 +84,11 @@ const $peer = {
  */
 
 requestSelfMedia($self.mediaConstraints)
+$self.filters = new VideoFX()
+document.querySelector('#self').addEventListener('click', (e)=>{
+  const filter = `filter-${$self.filters.cycleFilter()}`
+  e.target.className = filter;
+})
 
 
 
@@ -228,8 +245,6 @@ async function handleScSignal({description, candidate}){
   }
 }
 
-registerScCallbacks()
-
 
 /**
  *  Utility Functions
@@ -251,6 +266,7 @@ function prepareNamespace(hash, set_location){
  * Main flow
  */
 
+registerScCallbacks()
 const namespace = prepareNamespace(window.location.hash,true)
 /** signalling channel set up */
 const sc = io.connect('/'+ namespace, { autoConnect: false})
